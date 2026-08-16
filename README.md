@@ -91,7 +91,7 @@ There is no authentication in this portfolio build. Switch **Recruiter** / **Cli
 Suggested demo narrative:
 
 1. Open the Recruiter Command Center (`/app`).
-2. Open the at-risk **NovaStack Labs — Senior Backend Engineer** role.
+2. Open the at-risk **Stripe — Senior Backend Engineer** role.
 3. Read Pipeline Health (~60s / 100): shortlist below target and client response time slowing the pipeline.
 4. Open Role Calibration: Kafka as a must-have is shrinking the pool.
 5. Open **Aarav Menon** (91% match) and walk the fit breakdown.

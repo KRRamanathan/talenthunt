@@ -115,7 +115,7 @@ export default function Landing() {
           <div className="mt-16 grid gap-12 md:grid-cols-2 md:gap-16">
             <Quote
               quote="Reduced shortlist turnaround from 6 days to 3."
-              who="Maya Rao"
+              who="Sana Krishnan"
               role="fictional founder"
             />
             <Quote
@@ -230,9 +230,9 @@ function CommandPreview() {
     ["2", "Interviews"],
   ];
   const rows = [
-    { client: "NovaStack", role: "Senior Backend Engineer", note: "3 waiting for client review · SLA 6h", tone: "risk" },
-    { client: "OrbitForge", role: "Product Designer", note: "Shortlist below target", tone: "warn" },
-    { client: "CloudNest", role: "DevOps Engineer", note: "Candidate accepted offer", tone: "ok" },
+    { client: "Stripe", role: "Senior Backend Engineer", note: "3 waiting for client review · SLA 6h", tone: "risk" },
+    { client: "Notion", role: "Product Designer", note: "Shortlist below target", tone: "warn" },
+    { client: "Figma", role: "DevOps Engineer", note: "Candidate accepted offer", tone: "ok" },
   ];
   return (
     <div className="surface-card overflow-hidden shadow-lift">
@@ -246,7 +246,7 @@ function CommandPreview() {
       </div>
 
       <div className="px-6 pb-7 pt-6">
-        <h3 className="font-display text-[1.75rem] tracking-tight">Good morning, Maya.</h3>
+        <h3 className="font-display text-[1.75rem] tracking-tight">Good morning, Ramanathan.</h3>
 
         <div className="mt-6 grid grid-cols-2 divide-x divide-y divide-border border-y border-border sm:grid-cols-4 sm:divide-y-0">
           {metrics.map(([n, l]) => (

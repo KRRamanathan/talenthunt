@@ -47,9 +47,9 @@ export default function DesignSystem() {
         <h2 className="type-h2">Type</h2>
         <div className="mt-6 space-y-8">
           <p className="type-display">Your recruiting team, operationalized.</p>
-          <p className="type-h1">Good morning, Maya.</p>
+          <p className="type-h1">Good morning, Ramanathan.</p>
           <p className="type-h2">Attention needed</p>
-          <p className="type-h3">NovaStack — Senior Backend Engineer</p>
+          <p className="type-h3">Stripe — Senior Backend Engineer</p>
           <p className="max-w-xl">
             Body copy sits in Figtree at a readable 1.65 line-height. It should feel like a partner memo, not an admin
             console.

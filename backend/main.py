@@ -399,7 +399,7 @@ def dashboard_summary(db: Session = Depends(get_db)):
     )
     copilot = RecruiterCopilotService.actions(list(roles), now)
     return {
-        "greeting_name": "Maya",
+        "greeting_name": "Ramanathan",
         "metrics": {
             "active_roles": active_roles,
             "candidates_awaiting_action": awaiting,

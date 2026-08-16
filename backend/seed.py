@@ -12,18 +12,18 @@ def _dt(days_ago: int, hours_ago: int = 0) -> datetime:
 
 def populate(db: Session) -> None:
     clients = [
-        Client(name="NovaStack Labs", contact_name="Priya Nair", created_at=_dt(40)),
-        Client(name="OrbitForge", contact_name="Arjun Mehta", created_at=_dt(36)),
-        Client(name="CloudNest Systems", contact_name="Kabir Shah", created_at=_dt(30)),
-        Client(name="PixelHarbor", contact_name="Leela Iyer", created_at=_dt(28)),
+        Client(name="Stripe", contact_name="Priya Nair", created_at=_dt(40)),
+        Client(name="Notion", contact_name="Arjun Mehta", created_at=_dt(36)),
+        Client(name="Figma", contact_name="Kabir Shah", created_at=_dt(30)),
+        Client(name="Ramp", contact_name="Leela Iyer", created_at=_dt(28)),
     ]
     db.add_all(clients)
     db.flush()
-    nova, orbit, cloud, pixel = clients
+    stripe, notion, figma, ramp = clients
 
     roles_spec = [
         dict(
-            client=nova,
+            client=stripe,
             title="Senior Backend Engineer",
             seniority="Senior",
             skills=["Python", "Backend APIs", "Kafka", "PostgreSQL", "FastAPI", "AWS", "Docker"],
@@ -34,7 +34,7 @@ def populate(db: Session) -> None:
             created_at=_dt(5),
         ),
         dict(
-            client=nova,
+            client=stripe,
             title="Staff Platform Engineer",
             seniority="Staff",
             skills=["Go", "Kubernetes", "Distributed systems", "AWS", "Terraform"],
@@ -45,7 +45,7 @@ def populate(db: Session) -> None:
             created_at=_dt(12),
         ),
         dict(
-            client=nova,
+            client=stripe,
             title="Frontend Engineer",
             seniority="Mid-Senior",
             skills=["TypeScript", "React", "Design systems", "Vite"],
@@ -56,7 +56,7 @@ def populate(db: Session) -> None:
             created_at=_dt(8),
         ),
         dict(
-            client=orbit,
+            client=notion,
             title="Product Designer",
             seniority="Senior",
             skills=["Product design", "Figma", "Design systems", "Prototyping"],
@@ -67,7 +67,7 @@ def populate(db: Session) -> None:
             created_at=_dt(6),
         ),
         dict(
-            client=orbit,
+            client=notion,
             title="Growth Marketing Lead",
             seniority="Lead",
             skills=["Growth", "Lifecycle", "Analytics", "B2B SaaS"],
@@ -78,7 +78,7 @@ def populate(db: Session) -> None:
             created_at=_dt(9),
         ),
         dict(
-            client=orbit,
+            client=notion,
             title="Senior iOS Engineer",
             seniority="Senior",
             skills=["Swift", "iOS", "UIKit", "SwiftUI"],
@@ -89,7 +89,7 @@ def populate(db: Session) -> None:
             created_at=_dt(11),
         ),
         dict(
-            client=cloud,
+            client=figma,
             title="ML Engineer",
             seniority="Senior",
             skills=["Python", "Applied ML", "Feature stores", "AWS"],
@@ -100,7 +100,7 @@ def populate(db: Session) -> None:
             created_at=_dt(7),
         ),
         dict(
-            client=cloud,
+            client=figma,
             title="DevOps Engineer",
             seniority="Senior",
             skills=["AWS", "Terraform", "CI/CD", "Kubernetes"],
@@ -111,7 +111,7 @@ def populate(db: Session) -> None:
             created_at=_dt(14),
         ),
         dict(
-            client=cloud,
+            client=figma,
             title="Data Engineer",
             seniority="Mid-Senior",
             skills=["SQL", "dbt", "Python", "Warehousing"],
@@ -122,7 +122,7 @@ def populate(db: Session) -> None:
             created_at=_dt(4),
         ),
         dict(
-            client=pixel,
+            client=ramp,
             title="Founding Designer",
             seniority="Lead",
             skills=["Brand", "Product design", "Figma", "Narrative"],
@@ -133,7 +133,7 @@ def populate(db: Session) -> None:
             created_at=_dt(3),
         ),
         dict(
-            client=pixel,
+            client=ramp,
             title="Full-Stack Engineer",
             seniority="Senior",
             skills=["TypeScript", "React", "Node.js", "PostgreSQL"],
@@ -144,7 +144,7 @@ def populate(db: Session) -> None:
             created_at=_dt(10),
         ),
         dict(
-            client=pixel,
+            client=ramp,
             title="Customer Success Lead",
             seniority="Lead",
             skills=["Customer success", "SaaS", "Onboarding", "Narrative selling"],
@@ -171,7 +171,7 @@ def populate(db: Session) -> None:
         return Candidate(**kwargs)
 
     candidates = [
-        # NovaStack — Senior Backend Engineer (demo role)
+        # Stripe — Senior Backend Engineer (demo role)
         C(
             role_id=backend.id,
             name="Aarav Menon",
@@ -304,7 +304,7 @@ def populate(db: Session) -> None:
         C(role_id=frontend.id, name="Omar Sheikh", current_title="UI Engineer", years_experience=4, skills=["TypeScript", "React", "Vite"], fit_score=78, fit_summary="Product-minded UI engineer.", stage="shortlisted", salary_expectation="₹24L", notice_period="15 days", location="Pune", recruiter_notes="", updated_at=_dt(2)),
         C(role_id=frontend.id, name="Pia Krishnan", current_title="Software Engineer", years_experience=6, skills=["React", "JavaScript"], fit_score=70, fit_summary="Less TypeScript depth than we want.", stage="sourced", salary_expectation="₹22L", notice_period="30 days", location="Kochi", recruiter_notes="", updated_at=_dt(0, 12)),
         C(role_id=frontend.id, name="Yash Mistry", current_title="Frontend Engineer", years_experience=5, skills=["TypeScript", "React"], fit_score=75, fit_summary="Solid but notice period is long.", stage="rejected", rejection_reason="Notice period", salary_expectation="₹25L", notice_period="90 days", location="Pune", recruiter_notes="Internal.", updated_at=_dt(5)),
-        # OrbitForge Product Designer — shortlist below target
+        # Notion Product Designer — shortlist below target
         C(role_id=designer.id, name="Lila Bose", current_title="Product Designer", years_experience=6, skills=["Product design", "Figma", "Design systems"], fit_score=88, fit_summary="End-to-end product designer with systems craft.", stage="sourced", salary_expectation="₹26L", notice_period="30 days", location="Mumbai", recruiter_notes="Needs a design review before shortlist.", updated_at=_dt(1)),
         C(role_id=designer.id, name="Rehan Malik", current_title="Product Designer", years_experience=4, skills=["Figma", "Prototyping"], fit_score=73, fit_summary="Strong craft, thinner product sense.", stage="sourced", salary_expectation="₹20L", notice_period="15 days", location="Mumbai", recruiter_notes="", updated_at=_dt(2)),
         C(role_id=designer.id, name="Aditi Sen", current_title="Visual Designer", years_experience=7, skills=["Brand", "Figma"], fit_score=68, fit_summary="Visual-first; product systems are a stretch.", stage="sourced", salary_expectation="₹24L", notice_period="30 days", location="Kolkata", recruiter_notes="", updated_at=_dt(3)),
@@ -319,7 +319,7 @@ def populate(db: Session) -> None:
         C(role_id=ios.id, name="Mira Anand", current_title="Mobile Engineer", years_experience=5, skills=["Swift", "UIKit"], fit_score=81, fit_summary="UIKit-strong, SwiftUI catching up.", stage="shortlisted", salary_expectation="₹28L", notice_period="30 days", location="Bengaluru", recruiter_notes="", updated_at=_dt(2)),
         C(role_id=ios.id, name="Paul Cherian", current_title="iOS Engineer", years_experience=6, skills=["Swift", "iOS"], fit_score=77, fit_summary="Solid IC, less systems design.", stage="sourced", salary_expectation="₹27L", notice_period="45 days", location="Kochi", recruiter_notes="", updated_at=_dt(1)),
         C(role_id=ios.id, name="Ritu Lal", current_title="Android Engineer", years_experience=6, skills=["Kotlin"], fit_score=55, fit_summary="Wrong mobile stack.", stage="rejected", rejection_reason="Skill gap", salary_expectation="₹26L", notice_period="30 days", location="Pune", recruiter_notes="", updated_at=_dt(8)),
-        # CloudNest ML — interview feedback received
+        # Figma ML — interview feedback received
         C(role_id=ml.id, name="Ayan Ghosh", current_title="ML Engineer", years_experience=6, skills=["Python", "Applied ML", "AWS"], fit_score=85, fit_summary="Applied ML with production features, not research-only.", stage="interview", salary_expectation="₹38L", notice_period="45 days", location="Hyderabad", recruiter_notes="Feedback in — recommend hold on comp.", updated_at=_dt(0, 5)),
         C(role_id=ml.id, name="Sneha Kulkarni", current_title="Applied Scientist", years_experience=5, skills=["Python", "Applied ML"], fit_score=80, fit_summary="Scientist leaning engineer.", stage="shortlisted", salary_expectation="₹34L", notice_period="30 days", location="Pune", recruiter_notes="", updated_at=_dt(2)),
         C(role_id=ml.id, name="Joel Abraham", current_title="Data Scientist", years_experience=7, skills=["Python", "Feature stores"], fit_score=74, fit_summary="DS with light MLOps.", stage="sourced", salary_expectation="₹32L", notice_period="60 days", location="Hyderabad", recruiter_notes="", updated_at=_dt(1)),
@@ -346,7 +346,7 @@ def populate(db: Session) -> None:
         C(role_id=fullstack.id, name="Keerthi Das", current_title="Backend Engineer", years_experience=7, skills=["Node.js", "PostgreSQL"], fit_score=76, fit_summary="BE-leaning.", stage="sourced", salary_expectation="₹26L", notice_period="45 days", location="Chennai", recruiter_notes="", updated_at=_dt(3)),
         C(role_id=fullstack.id, name="Hugo Fernandez", current_title="Full-Stack Engineer", years_experience=6, skills=["React", "Node.js"], fit_score=70, fit_summary="Client passed on communication.", stage="rejected", rejection_reason="Client rejected", salary_expectation="₹27L", notice_period="30 days", location="Goa", recruiter_notes="Do not re-share.", updated_at=_dt(6)),
         # CS
-        C(role_id=cs.id, name="Maya Krishnan", current_title="CS Manager", years_experience=8, skills=["Customer success", "SaaS", "Onboarding"], fit_score=86, fit_summary="Narrative seller, not a ticket closer.", stage="offer", salary_expectation="₹24L", notice_period="30 days", location="Chennai", recruiter_notes="Offer out.", updated_at=_dt(1)),
+        C(role_id=cs.id, name="Kavya Krishnan", current_title="CS Manager", years_experience=8, skills=["Customer success", "SaaS", "Onboarding"], fit_score=86, fit_summary="Narrative seller, not a ticket closer.", stage="offer", salary_expectation="₹24L", notice_period="30 days", location="Chennai", recruiter_notes="Offer out.", updated_at=_dt(1)),
         C(role_id=cs.id, name="Rajan Bose", current_title="Implementation Lead", years_experience=6, skills=["Onboarding", "SaaS"], fit_score=78, fit_summary="Implementation-shaped CS.", stage="interview", salary_expectation="₹22L", notice_period="30 days", location="Kolkata", recruiter_notes="", updated_at=_dt(2)),
         C(role_id=cs.id, name="Ines Dutta", current_title="Account Manager", years_experience=5, skills=["Customer success"], fit_score=72, fit_summary="AM, lighter onboarding craft.", stage="shortlisted", salary_expectation="₹20L", notice_period="15 days", location="Chennai", recruiter_notes="", updated_at=_dt(4)),
         C(role_id=cs.id, name="Vivek Nanda", current_title="Support Lead", years_experience=7, skills=["Support"], fit_score=60, fit_summary="Support, not success.", stage="rejected", rejection_reason="Experience mismatch", salary_expectation="₹18L", notice_period="30 days", location="Chennai", recruiter_notes="", updated_at=_dt(9)),
