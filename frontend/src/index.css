@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #f4efe6;
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    @apply text-ink font-sans text-body antialiased;
+  }
+  ::selection {
+    background: #f3e0d4;
+    color: #1c1712;
+  }
+  :focus-visible {
+    outline: 2px solid rgba(180, 74, 40, 0.5);
+    outline-offset: 2px;
+  }
+  /* Keep native controls inside the palette — no default browser blue. */
+  input[type="range"] {
+    accent-color: #b44a28;
+    height: 2px;
+    background: #e4d8c8;
+    border-radius: 999px;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 999px;
+    background: #b44a28;
+    border: 3px solid #fffcf7;
+    box-shadow: 0 1px 4px rgba(28, 23, 18, 0.25);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    height: 12px;
+    width: 12px;
+    border-radius: 999px;
+    background: #b44a28;
+    border: 3px solid #fffcf7;
+    cursor: pointer;
+  }
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%2374685C' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.9rem center;
+    padding-right: 2.25rem;
+  }
+}
+
+@layer components {
+  .type-display {
+    @apply font-display text-4xl sm:text-5xl md:text-[3.5rem] leading-[1.05] tracking-tight;
+  }
+  .type-h1 {
+    @apply font-display text-h1;
+  }
+  .type-h2 {
+    @apply font-display text-h2;
+  }
+  .type-h3 {
+    @apply font-sans text-h3;
+  }
+  .type-caption {
+    @apply font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-muted;
+  }
+  .surface-card {
+    @apply rounded-card border border-border bg-paper shadow-card;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-5 py-2.5 text-sm font-semibold text-paper transition duration-200 hover:bg-[#9c3e22] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full border border-border bg-paper px-5 py-2.5 text-sm font-semibold text-ink transition duration-200 hover:border-ink/25 hover:shadow-card active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full px-3 py-1.5 text-sm font-medium text-muted transition duration-200 hover:bg-ink/[0.04] hover:text-ink disabled:cursor-not-allowed disabled:opacity-40;
+  }
+  .field {
+    @apply w-full rounded-xl border border-border bg-bg px-3.5 py-2.5 text-[0.9375rem] text-ink transition duration-200 placeholder:text-muted/60 hover:border-ink/20 focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/15;
+  }
+  .eyebrow-rule {
+    @apply flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted;
+  }
+}
+
+@layer utilities {
+  .scroll-soft {
+    scrollbar-width: thin;
+    scrollbar-color: #d9cbb8 transparent;
+  }
+  .scroll-soft::-webkit-scrollbar {
+    height: 8px;
+  }
+  .scroll-soft::-webkit-scrollbar-thumb {
+    background: #ddd0bd;
+    border-radius: 999px;
+  }
+  .scroll-soft::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #ece2d3 0%, #f7f1e8 45%, #ece2d3 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-rise {
+  animation: rise 0.35s ease-out both;
+}
