@@ -24,7 +24,7 @@ export default function Integrations() {
     }
   };
 
-  const groups = ["Collaboration", "Scheduling", "Communication", "ATS"];
+  const groups = ["Collaboration", "Scheduling", "Communication", "Project management", "ATS"];
 
   return (
     <PageTransition>
@@ -41,7 +41,7 @@ export default function Integrations() {
           Connect the operating layer.
         </h1>
         <p className="mt-4 max-w-2xl text-[1.0625rem] leading-relaxed text-muted">
-          Slack, calendar, email, and ATS — so TalentHunt stays the execution OS, not another candidate database.
+          Slack, calendar, email, Jira, and ATS — so TalentHunt stays the execution OS, not another candidate database.
         </p>
         <div className="mt-6 flex flex-wrap gap-4 text-[13px] text-muted">
           <span className="tabular-nums">{data.connected} connected</span>
@@ -78,13 +78,20 @@ export default function Integrations() {
                       </span>
                     </div>
                     <p className="mt-4 flex-1 text-[13px] leading-relaxed text-muted">{item.detail}</p>
-                    <button
-                      type="button"
-                      className={`mt-5 ${item.status === "connected" ? "btn-secondary" : "btn-primary"} px-4 py-2 text-[13px]`}
-                      onClick={() => toggle(item)}
-                    >
-                      {item.status === "connected" ? "Disconnect" : "Connect"}
-                    </button>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {item.href && item.status === "connected" && (
+                        <Link to={item.href} className="btn-primary px-4 py-2 text-[13px]">
+                          Open board →
+                        </Link>
+                      )}
+                      <button
+                        type="button"
+                        className={`${item.status === "connected" ? "btn-secondary" : "btn-primary"} px-4 py-2 text-[13px]`}
+                        onClick={() => toggle(item)}
+                      >
+                        {item.status === "connected" ? "Disconnect" : "Connect"}
+                      </button>
+                    </div>
                   </article>
                 ))}
               </div>

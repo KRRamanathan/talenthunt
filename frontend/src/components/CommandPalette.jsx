@@ -9,6 +9,7 @@ const PAGES = [
   { id: "p-pipeline", group: "Go to", label: "Pipeline", hint: "All open roles", href: "/app/pipeline" },
   { id: "p-notif", group: "Go to", label: "Notifications", hint: "Slack · Email · Calendar", href: "/app/notifications" },
   { id: "p-integrations", group: "Go to", label: "Integrations", hint: "Connect tools & ATS", href: "/app/integrations" },
+  { id: "p-jira", group: "Go to", label: "Jira delivery board", hint: "Sprints · epics · synced risks", href: "/app/delivery" },
   { id: "p-client", group: "Go to", label: "Client portal", hint: "What clients see", href: "/client" },
   { id: "a-intake", group: "Actions", label: "Open a new role", hint: "Role intake", href: "/intake" },
 ];

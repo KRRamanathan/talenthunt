@@ -27,6 +27,15 @@ _DEFAULT = {
         "summary": "Queue curated candidate outreach without leaving the OS.",
         "detail": "Templates are deterministic. No SMTP provider is wired in this build.",
     },
+    "jira": {
+        "id": "jira",
+        "name": "Jira",
+        "category": "Project management",
+        "status": "connected",
+        "summary": "Track TalentHunt delivery in Scrum sprints and sync at-risk roles as issues.",
+        "detail": "Board is live inside the product. At-risk and blocked roles sync into the active sprint as delivery tasks — demo mode, no live Atlassian API call.",
+        "href": "/app/delivery",
+    },
     "greenhouse": {
         "id": "greenhouse",
         "name": "Greenhouse",

@@ -37,7 +37,7 @@ const steps = [
 const shipped = [
   { title: "Automated candidate matching", body: "Live ranking with must-have coverage and one-click shortlist actions.", href: "/app/pipeline/1/matching" },
   { title: "Slack · Email · Calendar", body: "Delivery notifications with simulated payloads — ready for real providers later.", href: "/app/notifications" },
-  { title: "ATS integrations", body: "Greenhouse, Lever, Ashby as the system of record. TalentHunt stays the execution layer.", href: "/app/integrations" },
+  { title: "ATS · Jira delivery", body: "Greenhouse, Lever, Ashby as system of record. Jira board syncs at-risk roles into the active sprint.", href: "/app/delivery" },
   { title: "Deeper market intelligence", body: "Skill demand, salary bands, competitor density, and time-to-hire benchmarks.", href: "/app/pipeline/1/market" },
 ];
 

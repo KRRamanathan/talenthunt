@@ -30,6 +30,7 @@ from services.calibration import RoleCalibrationService
 from services.copilot import RecruiterCopilotService
 from services.health import PipelineHealthService
 from services.integrations import IntegrationsService
+from services.jira import JiraService
 from services.market import MarketInsightsService
 from services.matching import CandidateMatchingService
 from services.notifications import NotificationService
@@ -321,6 +322,16 @@ def act_notification(notification_id: str, payload: NotificationAct | None = Non
 @app.get("/integrations")
 def list_integrations():
     return IntegrationsService.list_all()
+
+
+@app.get("/integrations/jira/board")
+def jira_board(db: Session = Depends(get_db)):
+    roles = db.scalars(
+        select(Role)
+        .options(selectinload(Role.client), selectinload(Role.candidates))
+        .where(Role.status == "open")
+    ).all()
+    return JiraService.board(list(roles))
 
 
 class IntegrationPatch(BaseModel):

@@ -5,6 +5,7 @@ import CandidateIntelligence from "./pages/CandidateIntelligence.jsx";
 import ClientPortal from "./pages/ClientPortal.jsx";
 import ClientRole from "./pages/ClientRole.jsx";
 import CommandCenter from "./pages/CommandCenter.jsx";
+import Delivery from "./pages/Delivery.jsx";
 import DesignSystem from "./pages/DesignSystem.jsx";
 import Integrations from "./pages/Integrations.jsx";
 import Kanban from "./pages/Kanban.jsx";
@@ -37,6 +38,7 @@ export default function App() {
         <Route path="candidates/:candidateId" element={<CandidateIntelligence />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="integrations" element={<Integrations />} />
+        <Route path="delivery" element={<Delivery />} />
       </Route>
       <Route path="/client" element={<AppShell perspective="client" />}>
         <Route index element={<ClientPortal />} />

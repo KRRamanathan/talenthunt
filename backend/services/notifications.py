@@ -79,6 +79,26 @@ class NotificationService:
                     }
                 )
 
+            if health["status"] in {"at_risk", "blocked"}:
+                items.append(
+                    {
+                        "id": f"jira-risk-{role.id}",
+                        "channel": "jira",
+                        "priority": "high" if health["status"] == "blocked" else "medium",
+                        "title": f"Jira sync — {client} {role.title}",
+                        "body": f"Role health {health['score']}/100 ({health['status'].replace('_', ' ')}). Open a delivery issue in the active sprint.",
+                        "cta": "Open Jira board",
+                        "href": "/app/delivery",
+                        "role_id": role.id,
+                        "simulated_payload": {
+                            "project": "TH",
+                            "issue_type": "Bug" if health["status"] == "blocked" else "Task",
+                            "summary": f"[{client}] {role.title} — {health['status']}",
+                            "priority": "Highest" if health["status"] == "blocked" else "High",
+                        },
+                    }
+                )
+
             if offers:
                 items.append(
                     {
@@ -98,7 +118,7 @@ class NotificationService:
                 )
 
         rank = {"high": 0, "medium": 1, "low": 2}
-        channel_rank = {"slack": 0, "email": 1, "calendar": 2}
+        channel_rank = {"slack": 0, "jira": 1, "email": 2, "calendar": 3}
         items.sort(key=lambda x: (rank.get(x["priority"], 9), channel_rank.get(x["channel"], 9), x["title"]))
         items = items[:12]
 
@@ -109,6 +129,7 @@ class NotificationService:
                 "slack": len([i for i in items if i["channel"] == "slack"]),
                 "email": len([i for i in items if i["channel"] == "email"]),
                 "calendar": len([i for i in items if i["channel"] == "calendar"]),
+                "jira": len([i for i in items if i["channel"] == "jira"]),
             },
-            "label": "Simulated notifications — deterministic, no live Slack/email/calendar send",
+            "label": "Simulated notifications — deterministic, no live Slack/email/calendar/Jira send",
         }

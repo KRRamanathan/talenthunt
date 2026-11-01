@@ -56,5 +56,6 @@ export const api = {
   integrations: () => request("/integrations"),
   patchIntegration: (id, body) =>
     request(`/integrations/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  jiraBoard: () => request("/integrations/jira/board"),
   resetDemo: () => request("/demo/reset", { method: "POST" }),
 };

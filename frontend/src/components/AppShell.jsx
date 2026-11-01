@@ -9,6 +9,7 @@ const recruiter = [
   { to: "/app/pipeline", label: "Pipeline", match: (p) => p.startsWith("/app/pipeline") || p.startsWith("/app/candidates") },
   { to: "/app/notifications", label: "Notifications", badge: "notifications", match: (p) => p.startsWith("/app/notifications") },
   { to: "/app/integrations", label: "Integrations", match: (p) => p.startsWith("/app/integrations") },
+  { to: "/app/delivery", label: "Jira", match: (p) => p.startsWith("/app/delivery") },
   { to: "/intake", label: "Role intake", match: (p) => p.startsWith("/intake") },
 ];
 

@@ -162,7 +162,7 @@ export default function CommandCenter() {
             </ul>
             <div className="border-t border-border px-7 py-4">
               <Link to="/app/integrations" className="text-[13px] font-semibold text-muted hover:text-ink">
-                Manage Slack · Calendar · ATS →
+                Manage Slack · Jira · ATS →
               </Link>
             </div>
           </div>

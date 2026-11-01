@@ -7,6 +7,7 @@ import { useToast } from "../context/ToastContext.jsx";
 
 const CHANNEL = {
   slack: { label: "Slack", tone: "bg-accent-soft text-accent" },
+  jira: { label: "Jira", tone: "bg-ink text-paper" },
   email: { label: "Email", tone: "bg-sage-soft text-sage" },
   calendar: { label: "Calendar", tone: "bg-track-soft text-track" },
 };
