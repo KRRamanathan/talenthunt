@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition, RoleJourney } from "../components/Journey.jsx";
 import { ErrorState, Eyebrow, PageSkeleton, StatusPill } from "../components/ui.jsx";
 
 const STEP_STATE = {
@@ -35,7 +36,14 @@ export default function RoleHealth() {
     health.status === "on_track" ? "bg-track" : health.status === "at_risk" ? "bg-accent" : "bg-risk";
 
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <RoleJourney roleId={roleId} current="health" />
+      <NextStepStrip
+        label="Open deeper market intelligence"
+        detail={health.recommendation}
+        href={`/app/pipeline/${roleId}/market`}
+        secondary={{ label: "Weekly report", href: `/app/pipeline/${roleId}/report` }}
+      />
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <Eyebrow>{role.client_name} · pipeline health</Eyebrow>
@@ -176,6 +184,9 @@ export default function RoleHealth() {
       </section>
 
       <div className="mt-14 flex flex-wrap gap-3 border-t border-border pt-8">
+        <Link to={`/app/pipeline/${roleId}/market`} className="btn-primary px-5 py-2.5">
+          Deeper market intel
+        </Link>
         <Link to={`/app/pipeline/${roleId}`} className="btn-secondary px-5 py-2.5">
           Back to pipeline
         </Link>
@@ -183,6 +194,6 @@ export default function RoleHealth() {
           Weekly report
         </Link>
       </div>
-    </div>
+    </PageTransition>
   );
 }

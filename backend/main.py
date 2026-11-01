@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from fastapi import Depends, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
+from pydantic import BaseModel
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
@@ -28,8 +29,10 @@ from services import calibration_cache, market_cache
 from services.calibration import RoleCalibrationService
 from services.copilot import RecruiterCopilotService
 from services.health import PipelineHealthService
+from services.integrations import IntegrationsService
 from services.market import MarketInsightsService
 from services.matching import CandidateMatchingService
+from services.notifications import NotificationService
 from services.report import HiringReportService
 
 load_dotenv()
@@ -57,6 +60,12 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def _humanize_hours(hours: int) -> str:
+    if hours < 48:
+        return f"{max(1, hours)}h"
+    return f"{hours // 24} days"
 
 
 def _timeline(urgency: str) -> str:
@@ -153,6 +162,15 @@ def _load_role(db: Session, role_id: int) -> Role:
 @app.get("/healthz")
 def healthz():
     return {"ok": True, "service": "talenthunt-api"}
+
+
+@app.post("/demo/reset")
+def reset_demo():
+    run_seed(reset=True)
+    calibration_cache.invalidate()
+    market_cache.invalidate()
+    IntegrationsService.reset()
+    return {"ok": True, "detail": "Demo data restored to the original story."}
 
 
 @app.get("/clients", response_model=list[ClientOut])
@@ -265,7 +283,59 @@ def role_market(role_id: int, db: Session = Depends(get_db)):
     def compute():
         return MarketInsightsService.insights(role)
 
-    return market_cache.get_or_set(f"mkt:{role_id}", compute)
+    # Versioned key so deeper market fields refresh after deploy
+    return market_cache.get_or_set(f"mkt:v2:{role_id}", compute)
+
+
+@app.get("/roles/{role_id}/matches")
+def role_matches(role_id: int, db: Session = Depends(get_db)):
+    role = _load_role(db, role_id)
+    return CandidateMatchingService.rank_for_role(role, list(role.candidates))
+
+
+@app.get("/notifications")
+def list_notifications(db: Session = Depends(get_db)):
+    roles = db.scalars(
+        select(Role)
+        .options(selectinload(Role.client), selectinload(Role.candidates))
+        .where(Role.status == "open")
+    ).all()
+    return NotificationService.build(list(roles))
+
+
+class NotificationAct(BaseModel):
+    note: str = ""
+
+
+@app.post("/notifications/{notification_id}/act")
+def act_notification(notification_id: str, payload: NotificationAct | None = None):
+    return {
+        "ok": True,
+        "notification_id": notification_id,
+        "status": "queued",
+        "message": "Simulated action queued. No external Slack/email/calendar send was performed.",
+        "note": (payload.note if payload else "") or None,
+    }
+
+
+@app.get("/integrations")
+def list_integrations():
+    return IntegrationsService.list_all()
+
+
+class IntegrationPatch(BaseModel):
+    status: str
+
+
+@app.patch("/integrations/{integration_id}")
+def patch_integration(integration_id: str, payload: IntegrationPatch):
+    try:
+        item = IntegrationsService.set_status(integration_id, payload.status)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Integration not found")
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    return item
 
 
 @app.get("/candidates/{candidate_id}", response_model=CandidateOut)
@@ -368,7 +438,11 @@ def dashboard_summary(db: Session = Depends(get_db)):
         reason = health["recommendation"]
         if waiting >= 2:
             reason = f"{waiting} candidates waiting for client review"
-            sla = f"SLA: {max(1, 24 - sla_hours)}h remaining" if sla_hours < 24 else f"SLA: {sla_hours}h overdue"
+            sla = (
+                f"Client SLA: {max(1, 24 - sla_hours)}h left"
+                if sla_hours < 24
+                else f"Client SLA: {_humanize_hours(sla_hours - 24)} overdue"
+            )
         elif health["breakdown"]["candidate_volume"] < 18:
             reason = "Shortlist below target"
             sla = health["sla"]["label"]
@@ -398,6 +472,28 @@ def dashboard_summary(db: Session = Depends(get_db)):
         )
     )
     copilot = RecruiterCopilotService.actions(list(roles), now)
+    notifications = NotificationService.build(list(roles), now)
+    primary = attention[0] if attention else None
+    next_step = None
+    if primary:
+        next_step = {
+            "label": "Open the top at-risk role",
+            "detail": f"{primary['client_name']} — {primary['title']}",
+            "href": f"/app/pipeline/{primary['role_id']}",
+        }
+    elif copilot:
+        next_step = {
+            "label": copilot[0]["action"],
+            "detail": copilot[0]["title"],
+            "href": copilot[0]["href"],
+        }
+    else:
+        next_step = {
+            "label": "Review the pipeline",
+            "detail": "All roles look quiet — scan for shortlist opportunities.",
+            "href": "/app/pipeline",
+        }
+
     return {
         "greeting_name": "Ramanathan",
         "metrics": {
@@ -414,5 +510,15 @@ def dashboard_summary(db: Session = Depends(get_db)):
             else "No urgent copilot actions. Pipelines are quiet.",
             "actions": copilot,
         },
+        "notifications_count": len(notifications["items"]),
+        "next_step": next_step,
+        "journey": [
+            {"id": "brief", "label": "Brief", "href": "/intake"},
+            {"id": "calibrate", "label": "Calibrate", "href": "/app/pipeline"},
+            {"id": "match", "label": "Match", "href": "/app/pipeline"},
+            {"id": "pipeline", "label": "Pipeline", "href": "/app/pipeline"},
+            {"id": "decide", "label": "Decide", "href": "/client"},
+            {"id": "report", "label": "Report", "href": "/app/pipeline"},
+        ],
         "note": "Deterministic command-center summary from live pipeline data. Intelligence is explainable and rule-based.",
     }

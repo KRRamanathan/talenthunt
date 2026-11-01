@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition, RoleJourney } from "../components/Journey.jsx";
 import { ErrorState, Eyebrow, PageSkeleton } from "../components/ui.jsx";
 
 const FEASIBILITY_TONE = {
@@ -19,7 +20,14 @@ export default function Calibration() {
   const tone = FEASIBILITY_TONE[data.feasibility] || FEASIBILITY_TONE.Moderate;
 
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <RoleJourney roleId={roleId} current="calibration" />
+      <NextStepStrip
+        label="Run automated matching on this brief"
+        detail="Once constraints are clear, rank the slate before you push anyone to the client."
+        href={`/app/pipeline/${roleId}/matching`}
+        secondary={{ label: "Open pipeline", href: `/app/pipeline/${roleId}` }}
+      />
       <header className="max-w-3xl">
         <Eyebrow>Role calibration</Eyebrow>
         <h1 className="mt-6 font-display text-[2.5rem] leading-[1.05] tracking-[-0.03em] sm:text-[3rem]">
@@ -90,14 +98,17 @@ export default function Calibration() {
       </section>
 
       <div className="mt-12 flex flex-wrap gap-3 border-t border-border pt-8">
-        <Link to={`/app/pipeline/${roleId}`} className="btn-primary px-6 py-3">
+        <Link to={`/app/pipeline/${roleId}/matching`} className="btn-primary px-6 py-3">
+          Match candidates
+        </Link>
+        <Link to={`/app/pipeline/${roleId}`} className="btn-secondary px-6 py-3">
           Open pipeline
         </Link>
         <Link to={`/app/pipeline/${roleId}/health`} className="btn-secondary px-6 py-3">
           Pipeline health
         </Link>
       </div>
-    </div>
+    </PageTransition>
   );
 }
 

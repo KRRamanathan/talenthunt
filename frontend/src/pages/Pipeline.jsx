@@ -1,10 +1,22 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
 import { EmptyState, ErrorState, Eyebrow, PageSkeleton, StatusPill } from "../components/ui.jsx";
 
+const VIEWS = [
+  { id: "attention", label: "Needs attention", test: (r) => r.health_status !== "on_track" },
+  { id: "on_track", label: "On track", test: (r) => r.health_status === "on_track" },
+  { id: "all", label: "All roles", test: () => true },
+];
+
+const RANK = { blocked: 0, at_risk: 1, on_track: 2 };
+
 export default function Pipeline() {
-  const { data, error, loading, reload } = useApi(() => api.roles(0, 20));
+  const { data, error, loading, reload } = useApi(() => api.roles(0, 50));
+  const [params, setParams] = useSearchParams();
+  const [query, setQuery] = useState("");
+  const view = VIEWS.find((v) => v.id === params.get("view")) || VIEWS[2];
 
   if (loading) return <PageSkeleton />;
   if (error) return <ErrorState error={error} onRetry={reload} />;
@@ -22,6 +34,12 @@ export default function Pipeline() {
     );
   }
 
+  const q = query.trim().toLowerCase();
+  const roles = data.items
+    .filter(view.test)
+    .filter((r) => !q || `${r.client_name} ${r.title} ${r.location}`.toLowerCase().includes(q))
+    .sort((a, b) => RANK[a.health_status] - RANK[b.health_status] || a.health_score - b.health_score);
+
   return (
     <div className="animate-rise">
       <header className="flex flex-wrap items-end justify-between gap-6">
@@ -30,14 +48,52 @@ export default function Pipeline() {
           <h1 className="mt-6 font-display text-[2.5rem] leading-[1.05] tracking-[-0.03em] sm:text-[3rem]">
             Every live search, at delivery altitude.
           </h1>
+          <p className="mt-4 text-[0.9375rem] text-muted">Riskiest roles first, so the top card is always the next one to open.</p>
         </div>
-        <p className="pb-2 text-[13px] tabular-nums text-muted">
-          {data.items.length} of {data.total} roles
-        </p>
+        <Link to="/intake" className="btn-secondary mb-1 px-4 py-2 text-[13px]">
+          + New role
+        </Link>
       </header>
 
-      <div className="mt-14 grid gap-4 md:grid-cols-2">
-        {data.items.map((role) => (
+      <div className="mt-10 flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-1 rounded-full border border-border bg-surface/80 p-1">
+          {VIEWS.map((v) => {
+            const count = data.items.filter(v.test).length;
+            const active = v.id === view.id;
+            return (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => setParams(v.id === "all" ? {} : { view: v.id }, { replace: true })}
+                className={`rounded-full px-3.5 py-1.5 text-[13px] font-medium transition duration-200 ${
+                  active ? "bg-ink text-paper shadow-card" : "text-muted hover:text-ink"
+                }`}
+              >
+                {v.label}
+                <span className={`ml-1.5 tabular-nums ${active ? "text-paper/60" : "text-muted/70"}`}>{count}</span>
+              </button>
+            );
+          })}
+        </div>
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Filter by client, title, or city"
+          className="field max-w-xs py-2 text-[13px]"
+        />
+      </div>
+
+      {roles.length === 0 && (
+        <p className="mt-10 rounded-card border border-dashed border-border px-6 py-10 text-center text-[13px] text-muted">
+          No roles match this view.{" "}
+          <button type="button" className="font-semibold text-accent" onClick={() => { setQuery(""); setParams({}); }}>
+            Show all roles
+          </button>
+        </p>
+      )}
+
+      <div className="mt-6 grid gap-4 md:grid-cols-2">
+        {roles.map((role) => (
           <Link
             key={role.id}
             to={`/app/pipeline/${role.id}`}

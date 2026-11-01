@@ -49,4 +49,12 @@ export const api = {
   report: (id) => request(`/roles/${id}/report`),
   calibration: (id) => request(`/roles/${id}/calibration`),
   market: (id) => request(`/roles/${id}/market-insights`),
+  matches: (id) => request(`/roles/${id}/matches`),
+  notifications: () => request("/notifications"),
+  actNotification: (id, body = {}) =>
+    request(`/notifications/${id}/act`, { method: "POST", body: JSON.stringify(body) }),
+  integrations: () => request("/integrations"),
+  patchIntegration: (id, body) =>
+    request(`/integrations/${id}`, { method: "PATCH", body: JSON.stringify(body) }),
+  resetDemo: () => request("/demo/reset", { method: "POST" }),
 };

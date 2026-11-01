@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition } from "../components/Journey.jsx";
 import { EmptyState, ErrorState, Eyebrow, PageSkeleton } from "../components/ui.jsx";
 import { useToast } from "../context/ToastContext.jsx";
 
@@ -78,8 +79,15 @@ export default function ClientRole() {
     ["Offer", data.grouped.offer.length],
   ];
 
+  const lead = recommended[0];
+
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <NextStepStrip
+        label={lead ? `Review ${lead.name} (${lead.fit_score}% match)` : "Wait for the next curated shortlist"}
+        detail="Request interview or reject with a reason — your recruiter sees the signal immediately."
+        href={lead ? undefined : "/client"}
+      />
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <Eyebrow>{data.role.client_name} · hiring progress</Eyebrow>
@@ -253,7 +261,7 @@ export default function ClientRole() {
       >
         <span aria-hidden>←</span> All roles
       </Link>
-    </div>
+    </PageTransition>
   );
 }
 

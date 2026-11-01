@@ -1,5 +1,7 @@
+import os
 from datetime import datetime, timedelta
 
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from database import Base, SessionLocal, engine
@@ -412,10 +414,28 @@ def populate(db: Session) -> None:
     db.commit()
 
 
+STALE_AFTER_DAYS = 47
+
+
+def _demo_is_stale() -> bool:
+    if os.getenv("DEMO_AUTO_REFRESH", "1") == "0":
+        return False
+    db = SessionLocal()
+    try:
+        oldest = db.query(func.min(Client.created_at)).scalar()
+    finally:
+        db.close()
+    return oldest is not None and utcnow() - oldest > timedelta(days=STALE_AFTER_DAYS)
+
+
 def seed(reset: bool = True) -> None:
+    Base.metadata.create_all(bind=engine)
+    if not reset and _demo_is_stale():
+        print("Demo data has drifted out of its story window. Refreshing.")
+        reset = True
     if reset:
         Base.metadata.drop_all(bind=engine)
-    Base.metadata.create_all(bind=engine)
+        Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
         if db.query(Client).count() == 0:

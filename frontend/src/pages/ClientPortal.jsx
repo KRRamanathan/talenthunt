@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition } from "../components/Journey.jsx";
 import { EmptyState, ErrorState, Eyebrow, PageSkeleton, StatusPill } from "../components/ui.jsx";
 
 export default function ClientPortal() {
@@ -12,8 +13,15 @@ export default function ClientPortal() {
     return <EmptyState title="No active searches" body="Once a role is briefed, it will appear here." />;
   }
 
+  const first = data.items[0];
+
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <NextStepStrip
+        label={first ? `Review ${first.title}` : "No active searches yet"}
+        detail="You only see curated candidates — never internal recruiter notes."
+        href={first ? `/client/roles/${first.id}` : "/app"}
+      />
       <header className="max-w-2xl">
         <Eyebrow>Client portal · demo mode</Eyebrow>
         <h1 className="mt-6 font-display text-[2.5rem] leading-[1.05] tracking-[-0.03em] sm:text-[3rem]">
@@ -52,6 +60,6 @@ export default function ClientPortal() {
           </Link>
         ))}
       </div>
-    </div>
+    </PageTransition>
   );
 }

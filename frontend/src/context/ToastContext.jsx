@@ -5,28 +5,51 @@ const ToastContext = createContext(null);
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
-  const push = useCallback((message, tone = "ok") => {
-    const id = crypto.randomUUID();
-    setToasts((current) => [...current, { id, message, tone }]);
-    setTimeout(() => setToasts((current) => current.filter((t) => t.id !== id)), 3800);
+  const dismiss = useCallback((id) => {
+    setToasts((current) => current.filter((t) => t.id !== id));
   }, []);
+
+  const push = useCallback(
+    (message, tone = "ok", options = {}) => {
+      const id = crypto.randomUUID();
+      setToasts((current) => [...current.slice(-2), { id, message, tone, ...options }]);
+      setTimeout(() => dismiss(id), options.onAction ? 6500 : 3800);
+    },
+    [dismiss]
+  );
 
   const value = useMemo(() => ({ push }), [push]);
 
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex w-[min(90vw,22rem)] flex-col gap-2">
+      <div
+        aria-live="polite"
+        className="pointer-events-none fixed bottom-6 left-1/2 z-50 flex w-[min(92vw,26rem)] -translate-x-1/2 flex-col gap-2 sm:left-auto sm:right-6 sm:translate-x-0"
+      >
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto rounded-card border px-4 py-3 text-sm shadow-lift ${
+            className={`animate-rise pointer-events-auto flex items-center gap-3 rounded-card border px-4 py-3 text-sm shadow-lift ${
               toast.tone === "error"
                 ? "border-risk/20 bg-risk-soft text-risk"
-                : "border-border bg-paper text-ink"
+                : "border-ink/10 bg-ink text-paper"
             }`}
           >
-            {toast.message}
+            {toast.tone !== "error" && <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-track" />}
+            <span className="min-w-0 flex-1 leading-snug">{toast.message}</span>
+            {toast.onAction && (
+              <button
+                type="button"
+                className="shrink-0 rounded-full px-2.5 py-1 text-[13px] font-semibold text-[#F0B49C] transition hover:bg-paper/10"
+                onClick={() => {
+                  toast.onAction();
+                  dismiss(toast.id);
+                }}
+              >
+                {toast.actionLabel || "Undo"}
+              </button>
+            )}
           </div>
         ))}
       </div>

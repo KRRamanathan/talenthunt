@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition, RoleJourney } from "../components/Journey.jsx";
 import { ErrorState, Eyebrow, PageSkeleton } from "../components/ui.jsx";
 
 export default function Report() {
@@ -15,7 +16,14 @@ export default function Report() {
   const generated = new Date(data.generated_at.replace("Z", ""));
 
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <RoleJourney roleId={roleId} current="report" />
+      <NextStepStrip
+        label="Share this report with the client or return to the board"
+        detail="TalentHunt turns recruiter activity into hiring intelligence."
+        href={`/app/pipeline/${roleId}`}
+        secondary={{ label: "Client portal", href: `/client/roles/${roleId}` }}
+      />
       <header className="flex flex-wrap items-end justify-between gap-6 border-b border-border pb-9">
         <div>
           <Eyebrow>Weekly hiring report</Eyebrow>
@@ -115,6 +123,6 @@ export default function Report() {
           </Link>
         </div>
       </div>
-    </div>
+    </PageTransition>
   );
 }

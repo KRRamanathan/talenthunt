@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition, RoleJourney } from "../components/Journey.jsx";
 import { ErrorState, Eyebrow, PageSkeleton, StatusPill } from "../components/ui.jsx";
 import { useToast } from "../context/ToastContext.jsx";
 
@@ -49,26 +50,36 @@ export default function Kanban() {
 
   const { role, grouped } = data;
 
-  const move = async (candidate, stage, extra = {}) => {
-    const previous = grouped;
-    const next = {
-      ...grouped,
-      sourced: grouped.sourced.filter((c) => c.id !== candidate.id),
-      shortlisted: grouped.shortlisted.filter((c) => c.id !== candidate.id),
-      client_review: grouped.client_review.filter((c) => c.id !== candidate.id),
-      interview: grouped.interview.filter((c) => c.id !== candidate.id),
-      offer: grouped.offer.filter((c) => c.id !== candidate.id),
-      rejected: grouped.rejected.filter((c) => c.id !== candidate.id),
-    };
+  const relocate = (current, candidate, stage) => {
+    const next = Object.fromEntries(
+      Object.entries(current).map(([key, value]) =>
+        Array.isArray(value) ? [key, value.filter((c) => c.id !== candidate.id)] : [key, value]
+      )
+    );
+    next[stage] = [candidate, ...(next[stage] || [])];
+    return next;
+  };
+
+  const move = async (candidate, stage, extra = {}, { undoable = true } = {}) => {
+    if (candidate.stage === stage) return;
+    const from = candidate.stage;
     const updated = { ...candidate, stage, ...extra, updated_at: new Date().toISOString() };
-    if (stage === "rejected") next.rejected = [updated, ...next.rejected];
-    else next[stage] = [updated, ...next[stage]];
-    setData({ role, grouped: next });
+    setData((d) => ({ ...d, grouped: relocate(d.grouped, updated, stage) }));
     try {
       await api.patchCandidate(candidate.id, { stage, ...extra });
-      toast.push(`${candidate.name} moved to ${SHORT[stage] || "Rejected"}`);
+      toast.push(
+        `${candidate.name} → ${SHORT[stage] || "Rejected"}`,
+        "ok",
+        undoable
+          ? {
+              actionLabel: "Undo",
+              onAction: () =>
+                move({ ...updated, rejection_reason: null }, from, {}, { undoable: false }),
+            }
+          : {}
+      );
     } catch (err) {
-      setData({ role, grouped: previous });
+      setData((d) => ({ ...d, grouped: relocate(d.grouped, candidate, from) }));
       toast.push(err.message, "error");
     }
   };
@@ -81,8 +92,25 @@ export default function Kanban() {
 
   const totalActive = COLUMNS.reduce((n, [key]) => n + grouped[key].length, 0);
 
+  const topShortlist = grouped.shortlisted?.[0];
+
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <RoleJourney roleId={roleId} current="pipeline" />
+      <NextStepStrip
+        label={
+          topShortlist
+            ? `Review ${topShortlist.name} or send to client`
+            : "Run matching to grow the shortlist"
+        }
+        detail={`${role.sla_label} · Health ${role.health_score}/100`}
+        href={
+          topShortlist
+            ? `/app/candidates/${topShortlist.id}`
+            : `/app/pipeline/${roleId}/matching`
+        }
+        secondary={{ label: "Weekly report", href: `/app/pipeline/${roleId}/report` }}
+      />
       <header className="flex flex-wrap items-start justify-between gap-6">
         <div>
           <Eyebrow>{role.client_name}</Eyebrow>
@@ -97,23 +125,19 @@ export default function Kanban() {
             <span className="tabular-nums">Health {role.health_score}/100</span>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-4">
+        <div className="flex flex-col items-end gap-3">
           <StatusPill status={role.health_status} />
-          <div className="flex flex-wrap justify-end gap-2">
-            <Link to={`/app/pipeline/${roleId}/calibration`} className="btn-secondary px-4 py-2 text-[13px]">
-              Calibration
-            </Link>
-            <Link to={`/app/pipeline/${roleId}/health`} className="btn-secondary px-4 py-2 text-[13px]">
-              Health & SLA
-            </Link>
-            <Link to={`/app/pipeline/${roleId}/report`} className="btn-secondary px-4 py-2 text-[13px]">
-              Weekly report
-            </Link>
-          </div>
+          <Link to={`/client/roles/${roleId}`} className="text-[13px] font-semibold text-muted transition hover:text-ink">
+            Preview as client →
+          </Link>
         </div>
       </header>
 
-      <div className="scroll-soft mt-12 flex gap-2.5 overflow-x-auto pb-5">
+      <p className="mt-8 text-[12.5px] text-muted">
+        Drag cards between columns or use the stage buttons. Every move can be undone for a few seconds.
+      </p>
+
+      <div className="scroll-soft mt-4 flex gap-2.5 overflow-x-auto pb-5">
         {COLUMNS.map(([key, label, dot]) => (
           <section
             key={key}
@@ -252,6 +276,6 @@ export default function Kanban() {
           </div>
         </div>
       )}
-    </div>
+    </PageTransition>
   );
 }

@@ -1,17 +1,44 @@
 import { Link } from "react-router-dom";
 
-const steps = [
-  { n: "01", title: "Brief", body: "Intake a role in four steps — title, constraints, urgency, review — so sourcing starts from a shared brief, not a Slack thread." },
-  { n: "02", title: "Calibrate", body: "Before anyone is sourced, the brief is stress-tested: must-haves vs. preferred, feasibility, and the constraints that quietly shrink the pool." },
-  { n: "03", title: "Source & shortlist", body: "Recruiters work a live pipeline. Clients see a curated slate — never the database dump." },
-  { n: "04", title: "Hire", body: "Interviews, feedback, SLA, and a weekly report that explains why the search is moving — or stalling." },
+const primaryFeatures = [
+  {
+    n: "01",
+    title: "Command Center",
+    body: "Start every day with one question answered: what should the recruiter do next?",
+    href: "/app",
+  },
+  {
+    n: "02",
+    title: "Role calibration",
+    body: "Stress-test must-haves before sourcing so the brief does not quietly kill the pool.",
+    href: "/intake",
+  },
+  {
+    n: "03",
+    title: "Automated matching",
+    body: "Explainable ranking that surfaces who to shortlist — and why — without a black box.",
+    href: "/app/pipeline",
+  },
+  {
+    n: "04",
+    title: "Pipeline + client portal",
+    body: "Move stages with live updates. Clients see curated profiles, never recruiter notes.",
+    href: "/app/pipeline",
+  },
 ];
 
-const diffs = [
-  { title: "Curated, not crowded", body: "Clients see the strongest candidates, not a database dump." },
-  { title: "Calibrated before sourced", body: "Hard constraints are named while they can still be changed." },
-  { title: "Expert-vetted, explainable", body: "Every match score comes with a recruiter-style why — not a black box." },
-  { title: "Transparent on delivery", body: "SLAs, pipeline health, and weekly reports make RaaS execution visible." },
+const steps = [
+  { n: "01", title: "Brief", body: "Intake a role in four steps so sourcing starts from a shared brief, not a Slack thread." },
+  { n: "02", title: "Calibrate", body: "Name the constraints while they can still be changed." },
+  { n: "03", title: "Match & shortlist", body: "Rank the slate, then move the strongest profiles into a curated client view." },
+  { n: "04", title: "Decide & report", body: "Interviews, feedback, SLAs, notifications, and a weekly report that explains the week." },
+];
+
+const shipped = [
+  { title: "Automated candidate matching", body: "Live ranking with must-have coverage and one-click shortlist actions.", href: "/app/pipeline/1/matching" },
+  { title: "Slack · Email · Calendar", body: "Delivery notifications with simulated payloads — ready for real providers later.", href: "/app/notifications" },
+  { title: "ATS integrations", body: "Greenhouse, Lever, Ashby as the system of record. TalentHunt stays the execution layer.", href: "/app/integrations" },
+  { title: "Deeper market intelligence", body: "Skill demand, salary bands, competitor density, and time-to-hire benchmarks.", href: "/app/pipeline/1/market" },
 ];
 
 export default function Landing() {
@@ -24,10 +51,7 @@ export default function Landing() {
           </Link>
           <div className="flex items-center gap-1 sm:gap-3">
             <Link to="/app" className="btn-ghost hidden sm:inline-flex">
-              Recruiter
-            </Link>
-            <Link to="/client" className="btn-ghost hidden sm:inline-flex">
-              Client
+              Open product
             </Link>
             <Link to="/intake" className="btn-primary">
               Submit a Role
@@ -36,7 +60,7 @@ export default function Landing() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-6xl px-6 pb-24 pt-16 md:px-10 md:pb-32 md:pt-24">
+      <section className="mx-auto max-w-6xl px-6 pb-20 pt-16 md:px-10 md:pb-28 md:pt-24">
         <div className="grid items-center gap-14 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-6">
             <Eyebrow>Recruiter-as-a-Service, operationalized</Eyebrow>
@@ -44,15 +68,15 @@ export default function Landing() {
               Your recruiting team, operationalized.
             </h1>
             <p className="mt-7 max-w-xl text-[1.0625rem] leading-[1.7] text-muted">
-              TalentHunt helps RaaS teams manage startup hiring from role calibration to shortlist, interview and offer —
-              without losing the human layer of recruiting.
+              TalentHunt is the execution OS between recruiter judgment and client decisions — calibration, matching,
+              pipeline, notifications, and weekly intelligence in one sequential flow.
             </p>
             <div className="mt-10 flex flex-wrap items-center gap-3">
-              <Link to="/intake" className="btn-primary px-6 py-3">
-                Submit a Role
+              <Link to="/app" className="btn-primary px-6 py-3">
+                Start in Command Center
               </Link>
-              <Link to="/app/pipeline" className="btn-secondary px-6 py-3">
-                Explore Pipeline
+              <Link to="/intake" className="btn-secondary px-6 py-3">
+                Submit a Role
               </Link>
             </div>
             <p className="mt-10 border-t border-border pt-6 text-sm leading-relaxed text-muted">
@@ -60,7 +84,6 @@ export default function Landing() {
               <span className="text-ink"> It has an execution problem.</span>
             </p>
           </div>
-
           <div className="lg:col-span-6">
             <CommandPreview />
           </div>
@@ -68,43 +91,45 @@ export default function Landing() {
       </section>
 
       <section className="border-y border-border bg-surface">
-        <div className="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-28">
-          <Eyebrow>How it works</Eyebrow>
-          <div className="mt-14 grid gap-x-10 gap-y-14 sm:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step) => (
-              <div key={step.n} className="border-t border-border pt-6">
-                <p className="font-display text-[2.5rem] leading-none text-accent/45">{step.n}</p>
-                <h2 className="mt-5 font-display text-[1.625rem] tracking-tight">{step.title}</h2>
-                <p className="mt-4 text-[0.9375rem] leading-[1.7] text-muted">{step.body}</p>
-              </div>
+        <div className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
+          <Eyebrow>Main product — start here</Eyebrow>
+          <h2 className="mt-6 max-w-2xl font-display text-[2.25rem] leading-[1.1] tracking-[-0.025em]">
+            Prioritized for how a recruiter actually works.
+          </h2>
+          <div className="mt-12 grid gap-5 md:grid-cols-2">
+            {primaryFeatures.map((item) => (
+              <Link
+                key={item.title}
+                to={item.href}
+                className="surface-card group p-8 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift md:p-9"
+              >
+                <p className="type-caption text-accent/70">{item.n}</p>
+                <h3 className="mt-4 font-display text-[1.75rem] tracking-tight transition group-hover:text-accent">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-[0.9375rem] leading-[1.7] text-muted">{item.body}</p>
+                <p className="mt-5 text-[13px] font-semibold text-accent">Open →</p>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
-        <div className="max-w-2xl">
-          <Eyebrow>Why teams use it</Eyebrow>
-          <h2 className="mt-7 font-display text-[2.25rem] leading-[1.1] tracking-[-0.025em] sm:text-[2.75rem]">
-            Outcomes, not another ATS module.
-          </h2>
-        </div>
-        <div className="mt-14 grid gap-5 md:grid-cols-2">
-          {diffs.map((item, i) => (
-            <article
-              key={item.title}
-              className="surface-card p-9 transition duration-200 hover:-translate-y-0.5 hover:shadow-lift md:p-11"
-            >
-              <p className="type-caption text-accent/70">{String(i + 1).padStart(2, "0")}</p>
-              <h3 className="mt-5 font-display text-[1.75rem] leading-tight tracking-tight">{item.title}</h3>
-              <p className="mt-4 max-w-sm text-[0.9375rem] leading-[1.7] text-muted">{item.body}</p>
-            </article>
+      <section className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
+        <Eyebrow>How the flow works</Eyebrow>
+        <div className="mt-12 grid gap-x-10 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+          {steps.map((step) => (
+            <div key={step.n} className="border-t border-border pt-6">
+              <p className="font-display text-[2.5rem] leading-none text-accent/45">{step.n}</p>
+              <h2 className="mt-5 font-display text-[1.625rem] tracking-tight">{step.title}</h2>
+              <p className="mt-4 text-[0.9375rem] leading-[1.7] text-muted">{step.body}</p>
+            </div>
           ))}
         </div>
       </section>
 
       <section className="bg-ink text-paper">
-        <div className="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
+        <div className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
           <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-paper/45">
             <span className="h-px w-6 bg-accent" />
             Sample data — fictional
@@ -112,14 +137,14 @@ export default function Landing() {
           <h2 className="mt-7 max-w-2xl font-display text-[2.25rem] leading-[1.1] tracking-[-0.025em] sm:text-[2.75rem]">
             What a RaaS week is supposed to feel like.
           </h2>
-          <div className="mt-16 grid gap-12 md:grid-cols-2 md:gap-16">
+          <div className="mt-14 grid gap-12 md:grid-cols-2 md:gap-16">
             <Quote
-              quote="Reduced shortlist turnaround from 6 days to 3."
+              quote="Reduced shortlist turnaround from 6 days to 3 — because the next action was always visible."
               who="Sana Krishnan"
               role="fictional founder"
             />
             <Quote
-              quote="Finally understood why our engineering pipeline was stalling."
+              quote="Finally understood why our engineering pipeline was stalling — compensation, not craft."
               who="Arjun Mehta"
               role="fictional hiring manager"
             />
@@ -127,64 +152,73 @@ export default function Landing() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-24 md:px-10 md:py-32">
-        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
-          <div className="lg:col-span-5">
-            <Eyebrow>Product notes</Eyebrow>
-            <h2 className="mt-7 font-display text-[2.25rem] leading-[1.1] tracking-[-0.025em] sm:text-[2.5rem]">
-              We built the operational layer first — on purpose.
-            </h2>
-          </div>
-          <div className="lg:col-span-7">
-            <div className="space-y-10">
-              <Note title="Why the pipeline dashboard came first">
-                RaaS fails in the handoffs: calibration, shortlist quality, client response time, interview feedback. A
-                command center that answers “what should the recruiter do next?” is the product, not a reporting
-                afterthought.
+      <section className="mx-auto max-w-6xl px-6 py-20 md:px-10 md:py-24">
+        <div className="max-w-2xl">
+          <Eyebrow>Now shipping in the product</Eyebrow>
+          <h2 className="mt-6 font-display text-[2.25rem] leading-[1.1] tracking-[-0.025em]">
+            The roadmap items are no longer just a list.
+          </h2>
+          <p className="mt-4 text-[0.9375rem] leading-relaxed text-muted">
+            Matching, notifications, integrations, and deeper market intel are live as deterministic product surfaces —
+            clearly labeled, explainable, and ready for real providers later.
+          </p>
+        </div>
+        <div className="mt-12 grid gap-4 md:grid-cols-2">
+          {shipped.map((item) => (
+            <Link
+              key={item.title}
+              to={item.href}
+              className="surface-card group p-7 transition hover:-translate-y-0.5 hover:shadow-lift"
+            >
+              <h3 className="font-display text-[1.375rem] tracking-tight transition group-hover:text-accent">
+                {item.title}
+              </h3>
+              <p className="mt-3 text-[0.9375rem] leading-relaxed text-muted">{item.body}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="border-t border-border bg-surface">
+        <div className="mx-auto max-w-6xl px-6 py-16 md:px-10">
+          <div className="grid gap-10 lg:grid-cols-12">
+            <div className="lg:col-span-5">
+              <Eyebrow>Product notes</Eyebrow>
+              <h2 className="mt-5 font-display text-[1.875rem] leading-tight tracking-tight">
+                We built the operational layer first — on purpose.
+              </h2>
+            </div>
+            <div className="space-y-8 lg:col-span-7">
+              <Note title="Why Command Center stays on top">
+                RaaS fails in handoffs. A surface that answers “what next?” is the product — matching and integrations
+                exist to feed that loop, not replace recruiter judgment.
               </Note>
-              <Note title="What we intentionally did not build">
-                We intentionally did not build another full ATS. Existing ATS products already manage candidate records.
-                TalentHunt focuses on the operational layer between recruiter expertise and client decision-making.
-              </Note>
-              <Note title="What comes next">
-                <ul className="mt-4 grid gap-x-8 gap-y-2 sm:grid-cols-2">
-                  {[
-                    "Automated candidate matching",
-                    "Slack notifications",
-                    "Calendar integration",
-                    "Email automation",
-                    "ATS integrations",
-                    "Deeper talent market intelligence",
-                  ].map((item) => (
-                    <li key={item} className="flex items-baseline gap-2.5">
-                      <span className="h-1 w-1 shrink-0 rounded-full bg-accent/60" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
+              <Note title="What we still refuse to become">
+                We intentionally did not build another full ATS. Candidate records stay in Greenhouse, Lever, or Ashby.
+                TalentHunt owns delivery execution between recruiter craft and client decision-making.
               </Note>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="border-t border-border bg-surface">
+      <footer className="border-t border-border">
         <div className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-14 md:flex-row md:items-end md:justify-between md:px-10">
           <div>
             <p className="font-display text-xl tracking-tight">TalentHunt</p>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-muted">
-              A fictional portfolio product. No real companies, candidates, or customers.
+              A fictional portfolio product. Sample data throughout — including company names used for demo context.
             </p>
           </div>
           <div className="flex flex-wrap gap-x-8 gap-y-2 text-sm text-muted">
             <Link to="/app" className="transition hover:text-ink">
-              Recruiter
+              Command Center
             </Link>
             <Link to="/client" className="transition hover:text-ink">
               Client portal
             </Link>
-            <Link to="/design-system" className="transition hover:text-ink">
-              Design tokens
+            <Link to="/app/integrations" className="transition hover:text-ink">
+              Integrations
             </Link>
           </div>
         </div>
@@ -244,10 +278,8 @@ function CommandPreview() {
           <span className="h-1.5 w-1.5 rounded-full bg-accent/50" />
         </div>
       </div>
-
       <div className="px-6 pb-7 pt-6">
         <h3 className="font-display text-[1.75rem] tracking-tight">Good morning, Ramanathan.</h3>
-
         <div className="mt-6 grid grid-cols-2 divide-x divide-y divide-border border-y border-border sm:grid-cols-4 sm:divide-y-0">
           {metrics.map(([n, l]) => (
             <div key={l} className="px-4 py-4 sm:px-3">
@@ -256,14 +288,17 @@ function CommandPreview() {
             </div>
           ))}
         </div>
-
-        <p className="type-caption mt-7">Attention needed</p>
+        <p className="type-caption mt-7">Suggested next step</p>
+        <div className="mt-3 rounded-xl border border-accent/25 bg-accent-soft/50 px-4 py-3">
+          <p className="text-sm font-semibold">Open Stripe — Senior Backend Engineer</p>
+          <p className="mt-1 text-[13px] text-muted">Then calibrate → match → move Aarav to client review</p>
+        </div>
         <ul className="mt-4 space-y-2.5">
           {rows.map((row) => (
             <li
               key={row.role}
               className={`rounded-xl border px-4 py-3 ${
-                row.tone === "risk" ? "border-accent/25 bg-accent-soft/50" : "border-border bg-bg/40"
+                row.tone === "risk" ? "border-accent/25 bg-accent-soft/40" : "border-border bg-bg/40"
               }`}
             >
               <div className="flex items-center justify-between gap-3">

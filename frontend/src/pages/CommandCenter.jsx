@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { api } from "../api/client.js";
 import { useApi } from "../components/useApi.js";
+import { NextStepStrip, PageTransition } from "../components/Journey.jsx";
+import TourCard from "../components/TourCard.jsx";
 import { ErrorState, Eyebrow, PageSkeleton, StatusPill } from "../components/ui.jsx";
 
 const RAIL = {
@@ -21,15 +23,22 @@ export default function CommandCenter() {
   const today = new Date().toLocaleDateString(undefined, { weekday: "long", day: "numeric", month: "long" });
 
   const metrics = [
-    ["Active roles", m.active_roles],
-    ["Need action", m.candidates_awaiting_action],
-    ["Client pending", m.client_responses_pending],
-    ["Interviews", m.interviews_today],
-    ["At risk", m.roles_at_risk],
+    ["Active roles", m.active_roles, "/app/pipeline"],
+    ["Need action", m.candidates_awaiting_action, "/app/pipeline?view=attention"],
+    ["Client pending", m.client_responses_pending, "/app/notifications"],
+    ["Interviews", m.interviews_today, "/app/notifications"],
+    ["At risk", m.roles_at_risk, "/app/pipeline?view=attention"],
   ];
 
   return (
-    <div className="animate-rise">
+    <PageTransition>
+      <NextStepStrip
+        label={data.next_step?.label}
+        detail={data.next_step?.detail}
+        href={data.next_step?.href}
+        secondary={{ label: "Notifications", href: "/app/notifications" }}
+      />
+
       <header className="flex flex-wrap items-end justify-between gap-6">
         <div>
           <Eyebrow>Recruiter command center</Eyebrow>
@@ -40,15 +49,29 @@ export default function CommandCenter() {
             What should you do next — not a wall of candidate records.
           </p>
         </div>
-        <p className="pb-2 text-sm text-muted">{today}</p>
+        <div className="pb-2 text-right">
+          <p className="text-sm text-muted">{today}</p>
+          {data.notifications_count > 0 && (
+            <Link to="/app/notifications" className="mt-2 inline-flex text-[13px] font-semibold text-accent">
+              {data.notifications_count} delivery alerts →
+            </Link>
+          )}
+        </div>
       </header>
 
-      <section className="surface-card mt-12 grid grid-cols-2 divide-x divide-y divide-border sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
-        {metrics.map(([label, value]) => (
-          <div key={label} className="px-6 py-7">
+      <TourCard />
+
+      <section className="surface-card mt-10 grid grid-cols-2 divide-x divide-y divide-border overflow-hidden sm:grid-cols-3 lg:grid-cols-5 lg:divide-y-0">
+        {metrics.map(([label, value, href]) => (
+          <Link key={label} to={href} className="group px-6 py-7 transition duration-200 hover:bg-surface/70">
             <p className="font-display text-[2.5rem] leading-none tracking-[-0.02em] tabular-nums">{value}</p>
-            <p className="mt-3 text-[13px] text-muted">{label}</p>
-          </div>
+            <p className="mt-3 flex items-center justify-between text-[13px] text-muted">
+              {label}
+              <span className="text-accent opacity-0 transition duration-200 group-hover:opacity-100" aria-hidden>
+                →
+              </span>
+            </p>
+          </Link>
         ))}
       </section>
 
@@ -59,36 +82,45 @@ export default function CommandCenter() {
             <span className="text-[13px] text-muted">{data.attention.length} roles</span>
           </div>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-5 space-y-3">
             {data.attention.map((item) => (
-              <Link
+              <article
                 key={item.role_id}
-                to={`/app/pipeline/${item.role_id}`}
-                className="surface-card group flex overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lift"
+                className="surface-card group relative flex overflow-hidden transition duration-200 hover:-translate-y-0.5 hover:shadow-lift"
               >
                 <span className={`w-1 shrink-0 ${RAIL[item.status] || "bg-border"}`} />
                 <div className="min-w-0 flex-1 px-6 py-5">
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
                       <p className="type-caption">{item.client_name}</p>
-                      <p className="mt-1.5 font-sans text-[1.0625rem] font-semibold leading-snug transition group-hover:text-accent">
+                      <Link
+                        to={`/app/pipeline/${item.role_id}`}
+                        className="mt-1.5 block font-sans text-[1.0625rem] font-semibold leading-snug transition after:absolute after:inset-0 group-hover:text-accent"
+                      >
                         {item.title}
-                      </p>
+                      </Link>
                     </div>
                     <StatusPill status={item.status} />
                   </div>
-
                   <p className="mt-3 line-clamp-2 max-w-xl text-[0.9375rem] leading-relaxed text-muted">
                     {item.reason}
                   </p>
-
                   <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 border-t border-border/70 pt-3 text-[12.5px] text-muted">
                     <span>{item.sla}</span>
                     <span className="h-1 w-1 rounded-full bg-border" />
                     <span className="tabular-nums">Health {item.score}/100</span>
+                    <span className="h-1 w-1 rounded-full bg-border" />
+                    <span className="relative z-10 ml-auto flex gap-4">
+                      <Link to={`/app/pipeline/${item.role_id}/matching`} className="font-semibold text-muted hover:text-ink">
+                        Match
+                      </Link>
+                      <Link to={`/app/pipeline/${item.role_id}/report`} className="font-semibold text-accent">
+                        Report →
+                      </Link>
+                    </span>
                   </div>
                 </div>
-              </Link>
+              </article>
             ))}
           </div>
         </section>
@@ -104,7 +136,6 @@ export default function CommandCenter() {
                 Rule-based actions. Not a chatbot, not a live model.
               </p>
             </div>
-
             <ul className="divide-y divide-border">
               {data.copilot.actions.map((action) => (
                 <li key={action.role_id + action.action} className="px-7 py-5">
@@ -129,9 +160,14 @@ export default function CommandCenter() {
                 </li>
               ))}
             </ul>
+            <div className="border-t border-border px-7 py-4">
+              <Link to="/app/integrations" className="text-[13px] font-semibold text-muted hover:text-ink">
+                Manage Slack · Calendar · ATS →
+              </Link>
+            </div>
           </div>
         </aside>
       </div>
-    </div>
+    </PageTransition>
   );
 }
